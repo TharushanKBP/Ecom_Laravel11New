@@ -21,4 +21,6 @@ Route::middleware(['auth'])->group(function () {
 // Admin dashboard route (for authenticated admins only)
 Route::middleware(['auth', AuthAdmin::class])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+
+    Route::get('/admin/brands', [AdminController::class, 'brands'])->name('admin.brands');
 });
