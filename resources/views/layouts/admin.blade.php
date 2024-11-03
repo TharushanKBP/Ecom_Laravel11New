@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-select.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('css/style.css')}}">
-    <link rel="stylesheet" href="font/fonts.css">
+    <link rel="stylesheet" href="{{asset('font/fonts.css')}}">
     <link rel="stylesheet" href="{{asset('icon/style.css')}}">
     <link rel="shortcut icon" href="{{asset('images/favicon.ico')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('images/favicon.ico')}}">
@@ -33,11 +33,11 @@
         <div id="page" class="">
             <div class="layout-wrap">
 
-                <!-- <div id="preload" class="preload-container">
-    <div class="preloading">
-        <span></span>
-    </div>
-</div> -->
+                <div id="preload" class="preload-container">
+                    <div class="preloading">
+                        <span></span>
+                    </div>
+                </div>
 
                 <div class="section-menu-left">
                     <div class="box-logo">
@@ -88,7 +88,7 @@
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
-                                            <a href="add-brand.html" class="">
+                                            <a href="{{route('admin.brand.add')}}" class="">
                                                 <div class="text">New Brand</div>
                                             </a>
                                         </li>
