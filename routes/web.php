@@ -31,4 +31,5 @@ Route::middleware(['auth', AuthAdmin::class])
         Route::post('/brand/store', [AdminController::class, 'brand_store'])->name('brand.store');
         Route::get('/brand/edit/{id}', [AdminController::class, 'brand_edit'])->name('brand.edit');
         Route::put('/brand/update/{id}', [AdminController::class, 'brand_update'])->name('brand.update');
+        Route::delete('/admin/brands/{id}', [AdminController::class, 'destroy'])->name('brand.delete');
     });

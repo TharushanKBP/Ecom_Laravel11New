@@ -83,6 +83,19 @@ class AdminController extends Controller
         return redirect()->route('admin.brands')->with('status', 'Brand has been updated successfully!');
     }
 
+    public function destroy($id)
+    {
+        $brand = Brand::find($id);
+
+        if ($brand) {
+            // Optional: Add logic to handle related products or images if necessary
+            $brand->delete();
+            return redirect()->route('admin.brands')->with('status', 'Brand deleted successfully!');
+        }
+
+        return redirect()->route('admin.brands')->with('error', 'Brand not found.');
+    }
+
 
     public function GenerateBrandThumbailsImage($image, $imageName)
     {
