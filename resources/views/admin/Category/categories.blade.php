@@ -23,7 +23,7 @@
         <div class="wg-box">
             <div class="flex items-center justify-between gap10 flex-wrap">
                 <div class="wg-filter flex-grow">
-                    <form class="form-search" method="GET" action="{{ route('admin.brands') }}">
+                    <form class="form-search" method="GET" action="{{ route('admin.categories') }}">
                         <fieldset class="name">
                             <input type="text" placeholder="Search here..." name="name" value="{{ request('name') }}" tabindex="2" aria-required="true">
                         </fieldset>
@@ -67,12 +67,12 @@
 
                                 <td>
                                     <div class="list-icon-function">
-                                        <a href="#">
+                                        <a href="{{ route('admin.categories.edit',['id'=>$category->id]) }}">
                                             <div class="item edit">
                                                 <i class="icon-edit-3"></i>
                                             </div>
                                         </a>
-                                        <form class="delete-form" action="#" method="POST">
+                                        <form class="delete-form" action="{{ route('admin.categories.delete', ['id' => $category->id]) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="item text-danger delete">

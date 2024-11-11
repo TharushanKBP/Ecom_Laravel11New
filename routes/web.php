@@ -31,10 +31,13 @@ Route::middleware(['auth', AuthAdmin::class])
         Route::post('/brand/store', [AdminController::class, 'brand_store'])->name('brand.store');
         Route::get('/brand/edit/{id}', [AdminController::class, 'brand_edit'])->name('brand.edit');
         Route::put('/brand/update/{id}', [AdminController::class, 'brand_update'])->name('brand.update');
-        Route::delete('/admin/brands/{id}', [AdminController::class, 'destroy'])->name('brand.delete');
+        Route::delete('/admin/brands/{id}', [AdminController::class, 'brand_destroy'])->name('brand.delete');
 
         // Category management routes
         Route::get('/admin/categories', [AdminController::class, 'categories'])->name('categories');
         Route::get('/categories/add', [AdminController::class, 'add_categories'])->name('categories.add');
         Route::post('/categories/store', [AdminController::class, 'categories_store'])->name('categories.store');
+        Route::get('/categories/edit/{id}', [AdminController::class, 'categories_edit'])->name('categories.edit');
+        Route::put('/categories/update/{id}', [AdminController::class, 'categories_update'])->name('categories.update');
+        Route::delete('/admin/categories/{id}', [AdminController::class, 'categories_destroy'])->name('categories.delete');
     });

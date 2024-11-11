@@ -83,17 +83,17 @@ class AdminController extends Controller
         }
 
         $brand->save();
-        return redirect()->route('admin.Brand.brands')->with('status', 'Brand has been updated successfully!');
+        return redirect()->route('admin.brands')->with('status', 'Brand has been updated successfully!');
     }
 
-    public function destroy($id)
+    public function brand_destroy($id)
     {
         $brand = Brand::find($id);
 
         if ($brand) {
             // Optional: Add logic to handle related products or images if necessary
             $brand->delete();
-            return redirect()->route('admin.Brand.brands')->with('status', 'Brand deleted successfully!');
+            return redirect()->route('admin.brands')->with('status', 'Brand deleted successfully!');
         }
 
         return redirect()->route('admin.brands')->with('error', 'Brand not found.');
@@ -141,6 +141,54 @@ class AdminController extends Controller
         $category->image = $file_name;
         $category->save();
         return redirect()->route('admin.categories')->with('status', 'Category has been added succesfully!');
+    }
+
+    public function categories_edit($id)
+    {
+        $categories = Category::find($id);
+        return view('admin.Category.categories_edit', compact('categories'));
+    }
+
+    public function categories_update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:categories,slug,' . $id,
+            'image' => 'nullable|mimes:png,jpg,jpeg|max:2048'
+        ]);
+
+        $category = Category::findOrFail($id);
+        $category->name = $request->name;
+        $category->slug = Str::slug($request->name);
+
+
+        if ($request->hasFile('image')) {
+
+            if ($category->image && File::exists(public_path('uploads/categories/' . $category->image))) {
+                File::delete(public_path('uploads/categories/' . $category->image));
+            }
+
+            $image = $request->file('image');
+            $file_name = Carbon::now()->timestamp . '.' . $image->extension();
+            $this->GenerateCategoryThumbailsImage($image, $file_name);
+            $category->image = $file_name;
+        }
+
+        $category->save();
+        return redirect()->route('admin.categories')->with('status', 'Category has been updated successfully!');
+    }
+
+    public function categories_destroy($id)
+    {
+        $category = Category::find($id);
+
+        if ($category) {
+            // Optional: Add logic to handle related products or images if necessary
+            $category->delete();
+            return redirect()->route('admin.categories')->with('status', 'Category deleted successfully!');
+        }
+
+        return redirect()->route('admin.categories')->with('error', 'Category not found.');
     }
 
     public function GenerateCategoryThumbailsImage($image, $imageName)

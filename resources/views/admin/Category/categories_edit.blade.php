@@ -15,7 +15,7 @@
                     <i class="icon-chevron-right"></i>
                 </li>
                 <li>
-                    <a href="{{ route('admin.categories') }}">
+                    <a href="{{ route('admin.categories.add') }}">
                         <div class="text-tiny">Categories</div>
                     </a>
                 </li>
@@ -23,48 +23,48 @@
                     <i class="icon-chevron-right"></i>
                 </li>
                 <li>
-                    <div class="text-tiny">New Category</div>
+                    <div class="text-tiny">Edit Category</div>
                 </li>
             </ul>
         </div>
 
-        <!-- New Category Form -->
+        <!-- Edit Categories Form -->
         <div class="wg-box">
-            <form class="form-new-product form-style-1" action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
+            <form class="form-new-product form-style-1" action="{{ route('admin.categories.update', $categories->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
 
-                <!-- Category Name Field -->
                 <fieldset class="name">
                     <div class="body-title">Category Name <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="Category name" name="name" value="{{ old('name') }}" aria-label="Category name" required>
+                    <input class="flex-grow" type="text" placeholder="Category name" name="name" value="{{ $categories->name }}" required>
                 </fieldset>
                 @error('name')
                 <span class="alert alert-danger text-center">{{ $message }}</span>
                 @enderror
 
-                <!-- Category Slug Field -->
                 <fieldset class="name">
                     <div class="body-title">Category Slug <span class="tf-color-1">*</span></div>
-                    <input class="flex-grow" type="text" placeholder="Category Slug" name="slug" value="{{ old('slug') }}" aria-label="Category slug" required>
+                    <input class="flex-grow" type="text" placeholder="Category Slug" name="slug" value="{{ $categories->slug }}" required>
                 </fieldset>
                 @error('slug')
                 <span class="alert alert-danger text-center">{{ $message }}</span>
                 @enderror
 
-                <!-- Image Upload -->
                 <fieldset>
                     <div class="body-title">Upload Image <span class="tf-color-1">*</span></div>
                     <div class="upload-image flex-grow">
-                        <div class="item" id="imagepreview" style="display:none">
-                            <img src="" class="effect8" alt="Preview Image">
+                        <div class="item" id="imagepreview">
+                            @if($categories->image)
+                            <img src="{{ asset('uploads/categories/' . $categories->image) }}" alt="Preview Image" id="currentImage" class="image-preview">
+                            @endif
                         </div>
                         <div id="upload-file" class="item up-load">
                             <label class="uploadfile" for="myFile">
                                 <span class="icon">
                                     <i class="icon-upload-cloud"></i>
                                 </span>
-                                <span class="body-text">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                <input type="file" id="myFile" name="image" accept="image/*" aria-label="Category image" required>
+                                <span class="body-text">Drop your images here or <span class="tf-color">click to browse</span></span>
+                                <input type="file" id="myFile" name="image" accept="image/*" onchange="previewImage(event)">
                             </label>
                         </div>
                     </div>
@@ -73,7 +73,6 @@
                 <span class="alert alert-danger text-center">{{ $message }}</span>
                 @enderror
 
-                <!-- Submit Button -->
                 <div class="bot">
                     <button class="tf-button w208" type="submit">Save</button>
                 </div>
@@ -82,46 +81,30 @@
     </div>
 </div>
 
-@endsection
-
-@push('scripts')
 <script>
-    $(function() {
-        // Image Preview
-        $("#myFile").on("change", function(e) {
-            const [file] = this.files;
-            if (file) {
-                // Validate file size (2MB limit)
-                if (file.size > 2048 * 1024) {
-                    alert("File size should not exceed 2MB.");
-                    $(this).val(''); // Clear the input
-                    return;
-                }
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
 
-                // Validate file type (PNG, JPG, JPEG)
-                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!validTypes.includes(file.type)) {
-                    alert("Invalid file type. Please upload a PNG, JPG, or JPEG image.");
-                    $(this).val(''); // Clear the input
-                    return;
-                }
+        reader.onload = function() {
+            const imagePreview = document.getElementById('imagepreview');
+            imagePreview.innerHTML = `<img src="${reader.result}" alt="New Image Preview" class="image-preview">`;
+        }
 
-                $("#imagepreview img").attr('src', URL.createObjectURL(file));
-                $("#imagepreview").show();
-            }
-        });
-
-        // Slug Generation
-        $("input[name='name']").on("input", function() {
-            $("input[name='slug']").val(stringToSlug($(this).val()));
-        });
-    });
-
-    // Convert Text to Slug
-    function stringToSlug(text) {
-        return text.toLowerCase()
-            .replace(/[^\w ]+/g, "")
-            .replace(/ +/g, "-");
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     }
 </script>
-@endpush
+
+<style>
+    .image-preview {
+        max-width: 300px;
+        max-height: 200px;
+        object-fit: contain;
+        display: block;
+        margin: 10px 0;
+    }
+</style>
+
+@endsection
