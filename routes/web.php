@@ -32,4 +32,7 @@ Route::middleware(['auth', AuthAdmin::class])
         Route::get('/brand/edit/{id}', [AdminController::class, 'brand_edit'])->name('brand.edit');
         Route::put('/brand/update/{id}', [AdminController::class, 'brand_update'])->name('brand.update');
         Route::delete('/admin/brands/{id}', [AdminController::class, 'destroy'])->name('brand.delete');
+
+        // Category management routes
+        Route::get('/admin/categories', [AdminController::class, 'categories'])->name('categories');
     });

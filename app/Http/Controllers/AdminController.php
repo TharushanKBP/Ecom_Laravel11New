@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -16,6 +17,8 @@ class AdminController extends Controller
     {
         return view('admin.index');
     }
+
+    // Brand Part
 
     public function brands()
     {
@@ -105,5 +108,13 @@ class AdminController extends Controller
         $img->resize(124, 124, function ($constraint) {
             $constraint->aspectRation();
         })->save($destinationPath . '/' . $imageName);
+    }
+
+    // Category Part
+
+    public function categories()
+    {
+        $categories = Category::orderBy('id', 'desc')->paginate(10);
+        return view('admin.categories', compact('categories'));
     }
 }
