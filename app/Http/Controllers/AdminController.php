@@ -23,12 +23,12 @@ class AdminController extends Controller
     public function brands()
     {
         $brands = Brand::orderBy('id', 'desc')->paginate(10);
-        return view('admin.brands', compact('brands'));
+        return view('admin.Brand.brands', compact('brands'));
     }
 
     public function add_brand()
     {
-        return view('admin.brand_add');
+        return view('admin.Brand.brand_add');
     }
 
     public function brand_store(Request $request)
@@ -54,7 +54,7 @@ class AdminController extends Controller
     public function brand_edit($id)
     {
         $brands = Brand::find($id);
-        return view('admin.brand_edit', compact('brands'));
+        return view('admin.Brand.brand_edit', compact('brands'));
     }
 
     public function brand_update(Request $request, $id)
@@ -83,7 +83,7 @@ class AdminController extends Controller
         }
 
         $brand->save();
-        return redirect()->route('admin.brands')->with('status', 'Brand has been updated successfully!');
+        return redirect()->route('admin.Brand.brands')->with('status', 'Brand has been updated successfully!');
     }
 
     public function destroy($id)
@@ -93,7 +93,7 @@ class AdminController extends Controller
         if ($brand) {
             // Optional: Add logic to handle related products or images if necessary
             $brand->delete();
-            return redirect()->route('admin.brands')->with('status', 'Brand deleted successfully!');
+            return redirect()->route('admin.Brand.brands')->with('status', 'Brand deleted successfully!');
         }
 
         return redirect()->route('admin.brands')->with('error', 'Brand not found.');
@@ -115,6 +115,11 @@ class AdminController extends Controller
     public function categories()
     {
         $categories = Category::orderBy('id', 'desc')->paginate(10);
-        return view('admin.categories', compact('categories'));
+        return view('admin.Category.categories', compact('categories'));
+    }
+
+    public function add_categories()
+    {
+        return view('admin.Category.categories_add');
     }
 }
