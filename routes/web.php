@@ -36,4 +36,5 @@ Route::middleware(['auth', AuthAdmin::class])
         // Category management routes
         Route::get('/admin/categories', [AdminController::class, 'categories'])->name('categories');
         Route::get('/categories/add', [AdminController::class, 'add_categories'])->name('categories.add');
+        Route::post('/categories/store', [AdminController::class, 'categories_store'])->name('categories.store');
     });

@@ -122,4 +122,34 @@ class AdminController extends Controller
     {
         return view('admin.Category.categories_add');
     }
+
+    public function categories_store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:categories,slug',
+            'image' => 'mimes:png,jpg,jpeg|max:2048'
+        ]);
+
+        $category = new Category();
+        $category->name = $request->name;
+        $category->slug = Str::slug($request->name);
+        $image = $request->file('image');
+        $file_extention = $request->file('image')->extension();
+        $file_name = Carbon::now()->timestamp . '.' . $file_extention;
+        $this->GenerateCategoryThumbailsImage($image, $file_name);
+        $category->image = $file_name;
+        $category->save();
+        return redirect()->route('admin.categories')->with('status', 'Category has been added succesfully!');
+    }
+
+    public function GenerateCategoryThumbailsImage($image, $imageName)
+    {
+        $destinationPath = public_path('uploads/categories');
+        $img = Image::read($image->path());
+        $img->cover(124, 124, "top");
+        $img->resize(124, 124, function ($constraint) {
+            $constraint->aspectRation();
+        })->save($destinationPath . '/' . $imageName);
+    }
 }

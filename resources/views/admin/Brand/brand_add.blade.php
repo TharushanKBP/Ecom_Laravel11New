@@ -12,7 +12,7 @@
                     </a>
                 </li>
                 <li>
-                    <i class="icon-chevron-right"></i> 
+                    <i class="icon-chevron-right"></i>
                 </li>
                 <li>
                     <a href="{{ route('admin.brand.add') }}">
