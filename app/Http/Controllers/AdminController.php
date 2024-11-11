@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -199,5 +200,13 @@ class AdminController extends Controller
         $img->resize(124, 124, function ($constraint) {
             $constraint->aspectRation();
         })->save($destinationPath . '/' . $imageName);
+    }
+
+    // Product Part
+
+    public function products()
+    {
+        $products = Product::orderBy('id', 'desc')->paginate(10);
+        return view('admin.Product.products', compact('products'));
     }
 }
