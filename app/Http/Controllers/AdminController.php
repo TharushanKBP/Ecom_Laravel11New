@@ -209,4 +209,93 @@ class AdminController extends Controller
         $products = Product::orderBy('id', 'desc')->paginate(10);
         return view('admin.Product.products', compact('products'));
     }
+
+    public function add_products()
+    {
+        $categories = Category::select('id', 'name')->orderBy('name')->get();
+        $brands = Brand::select('id', 'name')->orderBy('name')->get();
+        return view('admin.Product.products_add', compact('categories', 'brands'));
+    }
+
+    public function products_store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:categories,slug',
+            'short_description' => 'required',
+            'description' => 'required',
+            'regular_price' => 'required',
+            'sale_price' => 'required',
+            'SKU' => 'required',
+            'stock_status' => 'required',
+            'featured' => 'required',
+            'quantity' => 'required',
+            'image' => 'mimes:png,jpg,jpeg|max:2048',
+            'category_id' => 'required',
+            'brand_id' => 'required',
+
+        ]);
+
+        $product = new Product();
+        $product->name = $request->name;
+        $product->slug = Str::slug($request->name);
+        $product->short_description = $request->short_description;
+        $product->description = $request->description;
+        $product->regular_price = $request->regular_price;
+        $product->sale_price = $request->sale_price;
+        $product->SKU = $request->SKU;
+        $product->stock_status = $request->stock_status;
+        $product->featured = $request->featured;
+        $product->quantity = $request->quantity;
+        $product->category_id = $request->category_id;
+        $product->brand_id = $request->brand_id;
+
+        $current_timetamp = Carbon::now()->timestamp;
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = $current_timetamp . '.' . $image->extension();
+            $this->GenerateProductThumbailsImage($image, $imageName);
+            $product->image = $imageName;
+        }
+
+        $gallery_arr = array();
+        $gallery_image = "";
+        $counter = 1;
+
+        if ($request->hasFile('images')) {
+            $allowedfileExtion = ['jpg', 'png', 'jpeg'];
+            $files = $request->file('images');
+            foreach ($files as $file) {
+                $gextension = $file->getClientOriginalExtension();
+                $gcheck = in_array($gextension, $allowedfileExtion);
+                if ($gcheck) {
+                    $gfileName = $current_timetamp . "-" . $counter . "." . $gextension;
+                    $this->GenerateProductThumbailsImage($file, $gfileName);
+                    array_push($gallery_arr, $gfileName);
+                    $counter = $counter + 1;
+                }
+            }
+            $gallery_image = implode(',', $gallery_arr);
+        }
+        $product->image = $gallery_image;
+        $product->save();
+        return redirect()->route('admin.products')->with('status', 'Product has been added succesfully!');
+    }
+
+    public function GenerateProductThumbailsImage($image, $imageName)
+    {
+        $destinationPathnewitems = public_path('uploads/products/newitems');
+        $destinationPath = public_path('uploads/products');
+        $img = Image::read($image->path());
+        $img->cover(540, 689, "top");
+
+        $img->resize(540, 689, function ($constraint) {
+            $constraint->aspectRation();
+        })->save($destinationPath . '/' . $imageName);
+
+        $img->resize(104, 104, function ($constraint) {
+            $constraint->aspectRation();
+        })->save($destinationPathnewitems . '/' . $imageName);
+    }
 }

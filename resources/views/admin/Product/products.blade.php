@@ -33,10 +33,13 @@
                         </div>
                     </form>
                 </div>
-                <a class="tf-button style-1 w208" href="add-product.html"><i
+                <a class="tf-button style-1 w208" href="{{route('admin.products.add')}}"><i
                         class="icon-plus"></i>Add new</a>
             </div>
             <div class="table-responsive">
+                @if(Session::has('status'))
+                <p id="statusMessage" class="alert alert-success">{{ Session::get('status') }}</p>
+                @endif
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -59,7 +62,7 @@
                             <td>{{$product->id}}</td>
                             <td class="pname">
                                 <div class="image">
-                                    <img src="{{asset('upload/products/newitems')}}/{{$product->image}}" alt="{{$product->name}}" class="image">
+                                    <img src="{{asset('uploads/products/newitems')}}/{{$product->image}}" alt="{{$product->name}}" class="image">
                                 </div>
                                 <div class="name">
                                     <a href="#" class="body-title-2">{{$product->name}}</a>
@@ -108,3 +111,51 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    $(function() {
+        $('.delete').on('click', function(e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+            swal({
+                title: "Are you sure?",
+                text: "You want to delete this record?",
+                icon: "warning",
+                buttons: ["No", "Yes"],
+                dangerMode: true,
+            }).then(function(result) {
+                if (result) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(function() {
+        // Automatically hide the status message after 5 seconds
+        setTimeout(function() {
+            $('#statusMessage').fadeOut('slow');
+        }, 5000);
+
+        $('.delete').on('click', function(e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+            swal({
+                title: "Are you sure?",
+                text: "You want to delete this record?",
+                icon: "warning",
+                buttons: ["No", "Yes"],
+                dangerMode: true,
+            }).then(function(result) {
+                if (result) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+
+@endpush

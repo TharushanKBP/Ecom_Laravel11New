@@ -15,18 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('shot_description')->nullable();
-            $table->string('description');
-            $table->decimal('regular_price');
-            $table->decimal('sale_price')->nullable();
+            $table->string('short_description')->nullable(); // Corrected typo
+            $table->text('description');
+            $table->decimal('regular_price', 8, 2); // Added precision
+            $table->decimal('sale_price', 8, 2)->nullable(); // Added precision
             $table->string('SKU');
             $table->enum('stock_status', ['instock', 'outofstock']);
             $table->boolean('featured')->default(false);
             $table->unsignedBigInteger('quantity')->default(10);
             $table->string('image')->nullable();
             $table->text('images')->nullable();
-            $table->unsignedBigInteger('category_id')->unsigned()->nullable();
-            $table->unsignedBigInteger('brand_id')->unsigned()->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('brand_id')->nullable();
             $table->timestamps();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
