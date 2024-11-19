@@ -94,7 +94,7 @@
                     <div class="upload-image flex-grow">
                         @if($product->image)
                         <div class="item" id="imgpreview">
-                            <img src="{{asset('uploads/products')}}/{{$product->image}}" class="effect8" alt="{{$product->name}}">
+                            <img src="{{ asset('uploads/products/' . explode(',', $product->image)[0]) }}" class="effect8" alt="{{$product->name}}">
                         </div>
                         @endif
                         <div id="upload-file" class="item up-load">
@@ -114,7 +114,7 @@
                         @if($product->image)
                         @foreach(explode(',',$product->image) as $img)
                         <div class="item gitems">
-                            <img src="{{asset('uploads/products')}}/{{trim($img)}}" alt="">
+                            <img src="{{asset('uploads/products/newitems')}}/{{trim($img)}}" alt="">
                         </div>
                         @endforeach
                         @endif

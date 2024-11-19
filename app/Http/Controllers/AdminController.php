@@ -250,17 +250,17 @@ class AdminController extends Controller
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
 
-        $current_timetamp = Carbon::now()->timestamp;
+        $current_timestamp = Carbon::now()->timestamp;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = $current_timetamp . '.' . $image->extension();
+            $imageName = $current_timestamp . '.' . $image->extension();
             $this->GenerateProductThumbailsImage($image, $imageName);
             $product->image = $imageName;
         }
 
         $gallery_arr = array();
-        $gallery_image = "";
+        $gallery_images = "";
         $counter = 1;
 
         if ($request->hasFile('images')) {
@@ -270,15 +270,15 @@ class AdminController extends Controller
                 $gextension = $file->getClientOriginalExtension();
                 $gcheck = in_array($gextension, $allowedfileExtion);
                 if ($gcheck) {
-                    $gfileName = $current_timetamp . "-" . $counter . "." . $gextension;
+                    $gfileName = $current_timestamp . "-" . $counter . "." . $gextension;
                     $this->GenerateProductThumbailsImage($file, $gfileName);
                     array_push($gallery_arr, $gfileName);
                     $counter = $counter + 1;
                 }
             }
-            $gallery_image = implode(',', $gallery_arr);
+            $gallery_images = implode(',', $gallery_arr);
         }
-        $product->image = $gallery_image;
+        $product->image = $gallery_images;
         $product->save();
         return redirect()->route('admin.products')->with('status', 'Product has been added succesfully!');
     }
@@ -359,7 +359,7 @@ class AdminController extends Controller
         }
 
         $gallery_arr = array();
-        $gallery_image = "";
+        $gallery_images = "";
         $counter = 1;
 
         if ($request->hasFile('images')) {
@@ -384,11 +384,21 @@ class AdminController extends Controller
                     $counter = $counter + 1;
                 }
             }
-            $gallery_image = implode(',', $gallery_arr);
-            $product->image = $gallery_image;
+            $gallery_images = implode(',', $gallery_arr);
+            $product->image = $gallery_images;
         }
 
         $product->save();
         return redirect()->route('admin.products')->with('status', 'Product has been updated successfully!');
+    }
+
+    public function products_destroy($id)
+    {
+        $product = Product::find($id);
+        if ($product) {
+            $product->delete();
+            return redirect()->route('admin.products')->with('status', 'Product deleted successfully!');
+        }
+        return redirect()->route('admin.products')->with('error', 'Product not found.');
     }
 }

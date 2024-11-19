@@ -89,15 +89,15 @@
 
             <div class="wg-box">
                 <fieldset>
-                    <div class="body-title">Upload images <span class="tf-color-1">*</span></div>
+                    <div class="body-title">Upload Main Image <span class="tf-color-1">*</span></div>
                     <div class="upload-image flex-grow">
-                        <div class="item" id="imgpreview" style="display:none">
-                            <img src="../../../localhost_8000/images/upload/upload-1.png" class="effect8" alt="">
+                        <div class="item" id="mainImagePreview" style="display:none">
+                            <img src="" class="effect8" alt="Main Image Preview">
                         </div>
                         <div id="upload-file" class="item up-load">
                             <label class="uploadfile" for="myFile">
                                 <span class="icon"><i class="icon-upload-cloud"></i></span>
-                                <span class="body-text">Drop your images here or select <span class="tf-color">click to browse</span></span>
+                                <span class="body-text">Drop your image here or select <span class="tf-color">click to browse</span></span>
                                 <input type="file" id="myFile" name="image" accept="image/*">
                             </label>
                         </div>
@@ -108,11 +108,12 @@
                 <fieldset>
                     <div class="body-title mb-10">Upload Gallery Images</div>
                     <div class="upload-image mb-16">
+                        <div id="galleryPreview" class="item" style="display:none"></div>
                         <div id="galUpload" class="item up-load">
                             <label class="uploadfile" for="gFile">
                                 <span class="icon"><i class="icon-upload-cloud"></i></span>
                                 <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                <input type="file" id="gFile" name="images[]" accept="image/*" multiple="">
+                                <input type="file" id="gFile" name="images[]" accept="image/*" multiple>
                             </label>
                         </div>
                         @error('images') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
@@ -188,10 +189,10 @@
 <script>
     $(function() {
 
+        // Main image preview
         $("#myFile").on("change", function(e) {
             const [file] = this.files;
             if (file) {
-
                 if (file.size > 2048 * 1024) {
                     alert("File size should not exceed 2MB.");
                     $(this).val('');
@@ -205,15 +206,17 @@
                     return;
                 }
 
-                $("#imagepreview img").attr('src', URL.createObjectURL(file));
-                $("#imagepreview").show();
+                $("#mainImagePreview img").attr('src', URL.createObjectURL(file));
+                $("#mainImagePreview").show();
             }
         });
 
+        // Gallery images preview
         $("#gFile").on("change", function(e) {
-            const [file] = this.files;
-            if (file) {
+            const files = this.files;
+            $("#galleryPreview").empty().show();
 
+            Array.from(files).forEach(file => {
                 if (file.size > 2048 * 1024) {
                     alert("File size should not exceed 2MB.");
                     $(this).val('');
@@ -227,9 +230,13 @@
                     return;
                 }
 
-                $("#imagepreview img").attr('src', URL.createObjectURL(file));
-                $("#imagepreview").show();
-            }
+                const img = $('<img />', {
+                    src: URL.createObjectURL(file),
+                    class: 'effect8',
+                    alt: 'Gallery Image Preview'
+                });
+                $("#galleryPreview").append(img);
+            });
         });
 
         $("input[name='name']").on("input", function() {
