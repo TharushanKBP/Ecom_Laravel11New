@@ -2,16 +2,18 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthAdmin;
 
-// Authentication routes
 Auth::routes();
 
 // Public route for home page
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+// Public route for shop page
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 
 // User dashboard route (for authenticated users)
 Route::middleware(['auth'])->group(function () {
