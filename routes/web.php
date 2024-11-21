@@ -14,6 +14,8 @@ Auth::routes();
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 // Public route for shop page
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+// Public route for single page
+Route::get('/shop/{product_slug}', [ShopController::class, 'product_details'])->name('shop.product.details');
 
 // User dashboard route (for authenticated users)
 Route::middleware(['auth'])->group(function () {

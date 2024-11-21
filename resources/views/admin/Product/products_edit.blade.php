@@ -90,39 +90,38 @@
 
             <div class="wg-box">
                 <fieldset>
-                    <div class="body-title">Upload images <span class="tf-color-1">*</span></div>
+                    <div class="body-title">Upload Image <span class="tf-color-1">*</span></div>
                     <div class="upload-image flex-grow">
                         @if($product->image)
                         <div class="item" id="imgpreview">
-                            <img src="{{ asset('uploads/products/' . explode(',', $product->image)[0]) }}" class="effect8" alt="{{$product->name}}">
+                            <img src="{{ asset('uploads/products/' . $product->image) }}" class="effect8" alt="{{$product->name}}">
                         </div>
                         @endif
                         <div id="upload-file" class="item up-load">
                             <label class="uploadfile" for="myFile">
                                 <span class="icon"><i class="icon-upload-cloud"></i></span>
-                                <span class="body-text">Drop your images here or select <span class="tf-color">click to browse</span></span>
+                                <span class="body-text">Drop your image here or select <span class="tf-color">click to browse</span></span>
                                 <input type="file" id="myFile" name="image" accept="image/*">
                             </label>
                         </div>
                         @error('image') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
                     </div>
+
                 </fieldset>
 
                 <fieldset>
                     <div class="body-title mb-10">Upload Gallery Images</div>
                     <div class="upload-image mb-16">
-                        @if($product->image)
-                        @foreach(explode(',',$product->image) as $img)
+                        @foreach(explode(',', $product->images) as $img)
                         <div class="item gitems">
-                            <img src="{{asset('uploads/products/newitems')}}/{{trim($img)}}" alt="">
+                            <img src="{{asset('uploads/products/newitems/'.$img)}}" alt="">
                         </div>
                         @endforeach
-                        @endif
                         <div id="galUpload" class="item up-load">
                             <label class="uploadfile" for="gFile">
                                 <span class="icon"><i class="icon-upload-cloud"></i></span>
                                 <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                <input type="file" id="gFile" name="images[]" accept="image/*" multiple="">
+                                <input type="file" id="gFile" name="images[]" accept="image/*" multiple>
                             </label>
                         </div>
                         @error('images') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
@@ -195,19 +194,21 @@
 @endsection
 
 @push('scripts')
+
 <script>
     $(function() {
-
+        // Single Image Upload Preview
         $("#myFile").on("change", function(e) {
             const [file] = this.files;
             if (file) {
-
+                // Validate file size (max 2MB)
                 if (file.size > 2048 * 1024) {
                     alert("File size should not exceed 2MB.");
                     $(this).val('');
                     return;
                 }
 
+                // Validate file type
                 const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                 if (!validTypes.includes(file.type)) {
                     alert("Invalid file type. Please upload a PNG, JPG, or JPEG image.");
@@ -215,42 +216,57 @@
                     return;
                 }
 
-                $("#imagepreview img").attr('src', URL.createObjectURL(file));
-                $("#imagepreview").show();
+                // Update the preview
+                const preview = $("#imgpreview img");
+                if (preview.length) {
+                    preview.attr('src', URL.createObjectURL(file));
+                } else {
+                    $("#imgpreview").html(`<img src="${URL.createObjectURL(file)}" class="effect8" alt="Preview Image">`);
+                }
+                $("#imgpreview").show();
             }
         });
 
+        // Multiple Gallery Images Upload Preview
         $("#gFile").on("change", function(e) {
-            const [file] = this.files;
-            if (file) {
+            const files = this.files;
+            const galleryContainer = $(".upload-image"); // Adjust selector if necessary
+            if (files.length) {
+                galleryContainer.find(".gitems").remove(); // Clear existing gallery previews
+                Array.from(files).forEach(file => {
+                    // Validate file size and type
+                    if (file.size > 2048 * 1024) {
+                        alert("File size should not exceed 2MB.");
+                        return;
+                    }
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    if (!validTypes.includes(file.type)) {
+                        alert("Invalid file type. Please upload PNG, JPG, or JPEG images.");
+                        return;
+                    }
 
-                if (file.size > 2048 * 1024) {
-                    alert("File size should not exceed 2MB.");
-                    $(this).val('');
-                    return;
-                }
-
-                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!validTypes.includes(file.type)) {
-                    alert("Invalid file type. Please upload a PNG, JPG, or JPEG image.");
-                    $(this).val('');
-                    return;
-                }
-
-                $("#imagepreview img").attr('src', URL.createObjectURL(file));
-                $("#imagepreview").show();
+                    // Append preview to the gallery container
+                    galleryContainer.append(`
+                        <div class="item gitems">
+                            <img src="${URL.createObjectURL(file)}" alt="Gallery Preview">
+                        </div>
+                    `);
+                });
             }
         });
 
+        // Auto-generate slug from name
         $("input[name='name']").on("input", function() {
             $("input[name='slug']").val(stringToSlug($(this).val()));
         });
     });
 
+    // Helper function to create slugs
     function stringToSlug(text) {
         return text.toLowerCase()
             .replace(/[^\w ]+/g, "")
             .replace(/ +/g, "-");
     }
 </script>
+
 @endpush

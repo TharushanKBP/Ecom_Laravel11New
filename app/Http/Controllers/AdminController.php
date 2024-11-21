@@ -221,19 +221,19 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'slug' => 'required|unique:categories,slug',
+            'slug' => 'required|unique:products,slug',
             'short_description' => 'required',
             'description' => 'required',
-            'regular_price' => 'required',
-            'sale_price' => 'required',
+            'regular_price' => 'required|numeric',
+            'sale_price' => 'nullable|numeric',
             'SKU' => 'required',
-            'stock_status' => 'required',
-            'featured' => 'required',
-            'quantity' => 'required',
-            'image' => 'mimes:png,jpg,jpeg|max:2048',
-            'category_id' => 'required',
-            'brand_id' => 'required',
-
+            'stock_status' => 'required|in:instock,outofstock',
+            'featured' => 'required|boolean',
+            'quantity' => 'required|integer',
+            'image' => 'required|mimes:png,jpg,jpeg|max:2048',
+            'images.*' => 'nullable|mimes:png,jpg,jpeg|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
         ]);
 
         $product = new Product();
@@ -250,54 +250,30 @@ class AdminController extends Controller
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
 
-        $current_timestamp = Carbon::now()->timestamp;
-
+        // Handle main image
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = $current_timestamp . '.' . $image->extension();
-            $this->GenerateProductThumbailsImage($image, $imageName);
-            $product->image = $imageName;
+            $mainImage = $request->file('image');
+            $mainImageName = time() . '.' . $mainImage->extension();
+            $mainImage->move(public_path('uploads/products'), $mainImageName);
+            $product->image = $mainImageName;
         }
 
-        $gallery_arr = array();
-        $gallery_images = "";
-        $counter = 1;
-
+        // Handle gallery images
         if ($request->hasFile('images')) {
-            $allowedfileExtion = ['jpg', 'png', 'jpeg'];
-            $files = $request->file('images');
-            foreach ($files as $file) {
-                $gextension = $file->getClientOriginalExtension();
-                $gcheck = in_array($gextension, $allowedfileExtion);
-                if ($gcheck) {
-                    $gfileName = $current_timestamp . "-" . $counter . "." . $gextension;
-                    $this->GenerateProductThumbailsImage($file, $gfileName);
-                    array_push($gallery_arr, $gfileName);
-                    $counter = $counter + 1;
-                }
+            $gallery_images = [];
+            foreach ($request->file('images') as $file) {
+                $galleryImageName = time() . '-' . uniqid() . '.' . $file->extension();
+                $file->move(public_path('uploads/products/newitems'), $galleryImageName);
+                $gallery_images[] = $galleryImageName;
             }
-            $gallery_images = implode(',', $gallery_arr);
+            $product->images = implode(',', $gallery_images);
         }
-        $product->image = $gallery_images;
+
         $product->save();
-        return redirect()->route('admin.products')->with('status', 'Product has been added succesfully!');
+
+        return redirect()->route('admin.products')->with('status', 'Product added successfully!');
     }
 
-    public function GenerateProductThumbailsImage($image, $imageName)
-    {
-        $destinationPathnewitems = public_path('uploads/products/newitems');
-        $destinationPath = public_path('uploads/products');
-        $img = Image::read($image->path());
-        $img->cover(540, 689, "top");
-
-        $img->resize(540, 689, function ($constraint) {
-            $constraint->aspectRation();
-        })->save($destinationPath . '/' . $imageName);
-
-        $img->resize(104, 104, function ($constraint) {
-            $constraint->aspectRation();
-        })->save($destinationPathnewitems . '/' . $imageName);
-    }
 
     public function products_edit($id)
     {
@@ -314,22 +290,22 @@ class AdminController extends Controller
             'slug' => 'required|unique:products,slug,' . $id,
             'short_description' => 'required',
             'description' => 'required',
-            'regular_price' => 'required',
-            'sale_price' => 'required',
+            'regular_price' => 'required|numeric',
+            'sale_price' => 'nullable|numeric',
             'SKU' => 'required',
-            'stock_status' => 'required',
-            'featured' => 'required',
-            'quantity' => 'required',
-            'image' => 'mimes:png,jpg,jpeg|max:2048',
-            'category_id' => 'required',
-            'brand_id' => 'required',
+            'stock_status' => 'required|in:instock,outofstock',
+            'featured' => 'required|boolean',
+            'quantity' => 'required|integer',
+            'image' => 'nullable|mimes:png,jpg,jpeg|max:2048',
+            'images.*' => 'nullable|mimes:png,jpg,jpeg|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
         ]);
 
-        $product = Product::find($id);
-        if (!$product) {
-            return redirect()->route('admin.products')->with('error', 'Product not found.');
-        }
+        // Find the product by ID
+        $product = Product::findOrFail($id);
 
+        // Update product details
         $product->name = $request->name;
         $product->slug = Str::slug($request->name);
         $product->short_description = $request->short_description;
@@ -343,54 +319,46 @@ class AdminController extends Controller
         $product->category_id = $request->category_id;
         $product->brand_id = $request->brand_id;
 
-        $current_timetamp = Carbon::now()->timestamp;
-
+        // Handle main image update
         if ($request->hasFile('image')) {
-            if (File::exists(public_path('uploads/products') . '/' . $product->image)) {
-                File::delete(public_path('uploads/products') . '/' . $product->image);
+            // Delete old image if it exists
+            if ($product->image && file_exists(public_path('uploads/products/' . $product->image))) {
+                unlink(public_path('uploads/products/' . $product->image));
             }
-            if (File::exists(public_path('uploads/products/newitems') . '/' . $product->image)) {
-                File::delete(public_path('uploads/products/newitems') . '/' . $product->image);
-            }
-            $image = $request->file('image');
-            $imageName = $current_timetamp . '.' . $image->extension();
-            $this->GenerateProductThumbailsImage($image, $imageName);
-            $product->image = $imageName;
+
+            // Upload the new image
+            $mainImage = $request->file('image');
+            $mainImageName = time() . '.' . $mainImage->extension();
+            $mainImage->move(public_path('uploads/products'), $mainImageName);
+            $product->image = $mainImageName;
         }
 
-        $gallery_arr = array();
-        $gallery_images = "";
-        $counter = 1;
-
+        // Handle gallery images update
         if ($request->hasFile('images')) {
-            foreach (explode(',', $product->image) as $ofile) {
-                if (File::exists(public_path('uploads/products') . '/' . $ofile)) {
-                    File::delete(public_path('uploads/products') . '/' . $ofile);
-                }
-                if (File::exists(public_path('uploads/products/newitems') . '/' . $ofile)) {
-                    File::delete(public_path('uploads/products/newitems') . '/' . $ofile);
+            // Delete old gallery images if they exist
+            if ($product->images) {
+                foreach (explode(',', $product->images) as $oldImage) {
+                    if (file_exists(public_path('uploads/products/newitems/' . $oldImage))) {
+                        unlink(public_path('uploads/products/newitems/' . $oldImage));
+                    }
                 }
             }
 
-            $allowedfileExtion = ['jpg', 'png', 'jpeg'];
-            $files = $request->file('images');
-            foreach ($files as $file) {
-                $gextension = $file->getClientOriginalExtension();
-                $gcheck = in_array($gextension, $allowedfileExtion);
-                if ($gcheck) {
-                    $gfileName = $current_timetamp . "-" . $counter . "." . $gextension;
-                    $this->GenerateProductThumbailsImage($file, $gfileName);
-                    array_push($gallery_arr, $gfileName);
-                    $counter = $counter + 1;
-                }
+            // Upload new gallery images
+            $gallery_images = [];
+            foreach ($request->file('images') as $file) {
+                $galleryImageName = time() . '-' . uniqid() . '.' . $file->extension();
+                $file->move(public_path('uploads/products/newitems'), $galleryImageName);
+                $gallery_images[] = $galleryImageName;
             }
-            $gallery_images = implode(',', $gallery_arr);
-            $product->image = $gallery_images;
+            $product->images = implode(',', $gallery_images);
         }
 
         $product->save();
-        return redirect()->route('admin.products')->with('status', 'Product has been updated successfully!');
+
+        return redirect()->route('admin.products')->with('status', 'Product updated successfully!');
     }
+
 
     public function products_destroy($id)
     {
