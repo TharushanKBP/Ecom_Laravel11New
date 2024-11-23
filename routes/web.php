@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
@@ -12,10 +13,15 @@ Auth::routes();
 
 // Public route for home page
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
+
 // Public route for shop page
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+
 // Public route for single page
 Route::get('/shop/{product_slug}', [ShopController::class, 'product_details'])->name('shop.product.details');
+
+// Public route for Cart 
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 // User dashboard route (for authenticated users)
 Route::middleware(['auth'])->group(function () {
