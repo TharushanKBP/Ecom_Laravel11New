@@ -23,8 +23,8 @@
 
                 @foreach (explode(',',$product->images) as $gimg)
                 <div class="swiper-slide product-single__image-item">
-                  <img loading="lazy" class="h-auto" src="{{asset('uploads/products')}}/{{$gimg}}" width="674" height="674" alt="" />
-                  <a data-fancybox="gallery" href="{{asset('uploads/products')}}/{{$gimg}}" data-bs-toggle="tooltip"
+                  <img loading="lazy" class="h-auto" src="{{asset('uploads/products/newitems')}}/{{$gimg}}" width="674" height="674" alt="" />
+                  <a data-fancybox="gallery" href="{{asset('uploads/products/newitems')}}/{{$gimg}}" data-bs-toggle="tooltip"
                     data-bs-placement="left" title="Zoom">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <use href="#icon_zoom" />
@@ -47,7 +47,7 @@
           <div class="product-single__thumbnail">
             <div class="swiper-container">
               <div class="swiper-wrapper">
-                <!-- <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto" src="{{asset('uploads/products/newitems')}}/{{$product->image}}" width="104" height="104" alt="" /></div> -->
+                <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto" src="{{asset('uploads/products')}}/{{$product->image}}" width="104" height="104" alt="" /></div>
                 @foreach (explode(',',$product->images) as $gimg)
                 <div class="swiper-slide product-single__image-item"><img loading="lazy" class="h-auto" src="{{asset('uploads/products/newitems')}}/{{$gimg}}" width="104" height="104" alt="" /></div>
                 @endforeach
@@ -388,6 +388,7 @@
             }
           }'>
         <div class="swiper-wrapper">
+          @foreach($rproduct as $rproduct)
           <div class="swiper-slide product-card">
             <div class="pc__img-wrapper">
               <a href="{{ route('shop.product.details', ['product_slug' => $rproduct->slug]) }}">
@@ -398,7 +399,7 @@
                   height="400"
                   alt="{{ $rproduct->name }}"
                   class="pc__img">
-                @if($rproduct->images)
+                @if(!empty($rproduct->images))
                 @foreach(explode(",", $rproduct->images) as $gimg)
                 <img
                   loading="lazy"
@@ -419,7 +420,7 @@
             </div>
 
             <div class="pc__info position-relative">
-              <p class="pc__category">{{ $rproduct->category->name }}</p>
+              <p class="pc__category">{{ $rproduct->category->name ?? '' }}</p>
               <h6 class="pc__title">
                 <a href="{{ route('shop.product.details', ['product_slug' => $rproduct->slug]) }}">
                   {{ $rproduct->name }}
@@ -443,9 +444,8 @@
               </button>
             </div>
           </div>
+          @endforeach
         </div>
-
-
 
       </div><!-- /.swiper-container js-swiper-slider -->
 
