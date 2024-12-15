@@ -47,12 +47,18 @@
                         <tr>
                             <td>
                                 <div class="shopping-cart__product-item">
-                                    <img loading="lazy" src="{asset{'uploads/products/newitems'}}/{{$item->model->image}}" width="120" height="120" alt="{{$item->name}}" />
+                                    @if ($item->model && $item->model->image)
+                                    <img loading="lazy" src="{{ asset('uploads/products/newitems/' . $item->model->image) }}"
+                                        width="120" height="120" alt="{{ $item->name }}" />
+                                    @else
+                                    <img loading="lazy" src="{{ asset('uploads/products/default.jpg') }}"
+                                        width="120" height="120" alt="Default Image" />
+                                    @endif
                                 </div>
                             </td>
                             <td>
                                 <div class="shopping-cart__product-item__detail">
-                                    <h4>{{$item->name}}</h4>
+                                    <h4>{{ $item->name }}</h4>
                                     <ul class="shopping-cart__product-item__options">
                                         <li>Color: Yellow</li>
                                         <li>Size: L</li>
@@ -60,17 +66,17 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="shopping-cart__product-price">${{$item->price}}</span>
+                                <span class="shopping-cart__product-price">${{ $item->price }}</span>
                             </td>
                             <td>
                                 <div class="qty-control position-relative">
-                                    <input type="number" name="quantity" value="3" min="1" class="qty-control__number text-center">
+                                    <input type="number" name="quantity" value="{{ $item->qty }}" min="1" class="qty-control__number text-center">
                                     <div class="qty-control__reduce">-</div>
                                     <div class="qty-control__increase">+</div>
                                 </div>
                             </td>
                             <td>
-                                <span class="shopping-cart__subtotal">${{$item->subTotal()}}</span>
+                                <span class="shopping-cart__subtotal">${{ $item->subTotal() }}</span>
                             </td>
                             <td>
                                 <a href="#" class="remove-cart">
@@ -83,6 +89,7 @@
                         </tr>
                         @endforeach
                     </tbody>
+
                 </table>
                 <div class="cart-table-footer">
                     <form action="#" class="position-relative bg-body">
