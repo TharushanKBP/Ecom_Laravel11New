@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
@@ -9,10 +10,11 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $size = $request->query('size') ? $request->query('size') : 12;
-        $o_column = "";
-        $o_order = "";
-        $order = $request->query('order') ? $request->query('order') : -1;
+        $size = $request->query('size', 12); // Default to 12 if not provided
+        $order = $request->query('order', -1); // Default to -1 if not provided
+        $f_brands = $request->query('brands', ''); // Get brand filter from query
+
+        // Determine order column and direction
         switch ($order) {
             case 1:
                 $o_column = 'created_at';
@@ -36,14 +38,23 @@ class ShopController extends Controller
                 break;
         }
 
-        $products = Product::orderBy('created_at', 'DESC')->orderBy($o_column, $o_order)->paginate($size);
-        return view('shop', compact('products', 'size', 'order'));
+        $brands = Brand::orderBy('name', 'ASC')->get();
+        $products = Product::when($f_brands, function ($query) use ($f_brands) {
+            $query->whereIn('brand_id', explode(',', $f_brands));
+        })
+            ->orderBy($o_column, $o_order)
+            ->paginate($size);
+
+        return view('shop', compact('products', 'size', 'order', 'brands'));
     }
 
     public function product_details($product_slug)
     {
-        $product = Product::where('slug', $product_slug)->first();
-        $rproduct = Product::where('slug', '<>', $product_slug)->get()->take(8);
+        $product = Product::where('slug', $product_slug)->firstOrFail();
+        $rproduct = Product::where('slug', '<>', $product_slug)
+            ->take(8)
+            ->get();
+
         return view('details', compact('product', 'rproduct'));
     }
 }
