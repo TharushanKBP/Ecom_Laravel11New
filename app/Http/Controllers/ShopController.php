@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
@@ -10,9 +11,10 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $size = $request->query('size', 12); // Default to 12 if not provided
-        $order = $request->query('order', -1); // Default to -1 if not provided
-        $f_brands = $request->query('brands', ''); // Get brand filter from query
+        $size = $request->query('size', 12);
+        $order = $request->query('order', -1);
+        $f_brands = $request->query('brands', '');
+        $f_categories = $request->query('categories', '');
 
         // Determine order column and direction
         switch ($order) {
@@ -39,13 +41,17 @@ class ShopController extends Controller
         }
 
         $brands = Brand::orderBy('name', 'ASC')->get();
+        $categories = Category::orderBy('name', 'ASC')->get();
         $products = Product::when($f_brands, function ($query) use ($f_brands) {
             $query->whereIn('brand_id', explode(',', $f_brands));
         })
+            ->when($f_categories, function ($query) use ($f_categories) {
+                $query->whereIn('category_id', explode(',', $f_categories));
+            })
             ->orderBy($o_column, $o_order)
             ->paginate($size);
 
-        return view('shop', compact('products', 'size', 'order', 'brands'));
+        return view('shop', compact('products', 'size', 'order', 'brands', 'categories', 'f_brands', 'f_categories'));
     }
 
     public function product_details($product_slug)
