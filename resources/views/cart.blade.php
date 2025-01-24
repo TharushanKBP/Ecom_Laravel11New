@@ -35,7 +35,6 @@
                     <thead>
                         <tr>
                             <th>Product</th>
-                            <th></th>
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Subtotal</th>
@@ -47,18 +46,13 @@
                         <tr>
                             <td>
                                 <div class="shopping-cart__product-item">
-                                    @if ($item->model && $item->model->image)
+                                    @if ($item->model && $item->model->image && file_exists(public_path('uploads/products/newitems/' . $item->model->image)))
                                     <img loading="lazy" src="{{ asset('uploads/products/newitems/' . $item->model->image) }}"
                                         width="120" height="120" alt="{{ $item->name }}" />
                                     @else
                                     <img loading="lazy" src="{{ asset('uploads/products/default.jpg') }}"
                                         width="120" height="120" alt="Default Image" />
                                     @endif
-                                </div>
-                            </td>
-                            <td>
-                                <div class="shopping-cart__product-item__detail">
-                                    <h4>{{ $item->name }}</h4>
                                 </div>
                             </td>
                             <td>
