@@ -18,4 +18,16 @@ class WishlistController extends Controller
         Cart::instance('wishlist')->add($request->id, $request->name, $request->quantity, $request->price)->associate('App\Models\Product');
         return Redirect()->back();
     }
+
+    public function remove_from_wishlist($rowId)
+    {
+        Cart::instance('wishlist')->remove($rowId);
+        return Redirect()->back();
+    }
+
+    public function empty_wishlist()
+    {
+        Cart::instance('wishlist')->destroy();
+        return Redirect()->back();
+    }
 }

@@ -146,13 +146,12 @@
             <input type="hidden" name="name" value="{{$product->name}}">
             <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}">
             <input type="hidden" name="quantity" value="1">
-            <a href="javascript:void(0)" class="menu-link menu-link_us-s add-to-wishlist" onclick="document.getElementById('wishlist-form').submit();"><svg width="16" height="16" viewBox="0 0 20 20"
-                fill="none" xmlns="http://www.w3.org/2000/svg">
+            <a href="javascript:void(0)" class="menu-link menu-link_us-s add-to-wishlist" onclick="document.getElementById('wishlist-form').submit();"><svg width="20" height="20" viewBox="0 0 10 10"
+                fill="none" xmlns="http://www.w3.org/2000/svg" style="position: relative; top: -4.8px; margin-right: 6px;">
                 <use href="#icon_heart" />
-              </svg><span>Add to Wishlist</span></a>
+              </svg><span style="position: relative; top: -5px;">Add to Wishlist</span></a>
           </form>
           @endif
-
 
           <share-button class="share-button">
             <button class="menu-link menu-link_us-s to-share border-0 bg-transparent d-flex align-items-center">
@@ -445,7 +444,7 @@
                 <input type="hidden" name="price" value="{{$rproduct->sale_price == '' ? $rproduct->regular_price : $rproduct->sale_price}}">
                 <button class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
               </form>
-              @endif
+              <!-- @endif -->
             </div>
 
             <div class="pc__info position-relative">
