@@ -35,10 +35,11 @@
                     <thead>
                         <tr>
                             <th>Product</th>
+                            <th>Product Name</th>
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Subtotal</th>
-                            <th></th>
+                            <th>Remove</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,14 +47,17 @@
                         <tr>
                             <td>
                                 <div class="shopping-cart__product-item">
-                                    @if ($item->model && $item->model->image && file_exists(public_path('uploads/products/newitems/' . $item->model->image)))
-                                    <img loading="lazy" src="{{ asset('uploads/products/newitems/' . $item->model->image) }}"
+                                    @if ($item->model && $item->model->image && file_exists(public_path('uploads/products/' . $item->model->image)))
+                                    <img loading="lazy" src="{{ asset('uploads/products/' . $item->model->image) }}"
                                         width="120" height="120" alt="{{ $item->name }}" />
                                     @else
                                     <img loading="lazy" src="{{ asset('uploads/products/default.jpg') }}"
                                         width="120" height="120" alt="Default Image" />
                                     @endif
                                 </div>
+                            </td>
+                            <td>
+                                <span class="shopping-cart__product-name">{{ $item->name }}</span>
                             </td>
                             <td>
                                 <span class="shopping-cart__product-price">${{ $item->price }}</span>
@@ -71,7 +75,6 @@
                                         @method('PUT')
                                         <div class="qty-control__increase">+</div>
                                     </form>
-
                                 </div>
                             </td>
                             <td>
@@ -92,7 +95,6 @@
                         </tr>
                         @endforeach
                     </tbody>
-
                 </table>
                 <div class="cart-table-footer">
                     <form action="#" class="position-relative bg-body">
@@ -150,7 +152,6 @@
         </div>
     </section>
 </main>
-
 
 @endsection
 
