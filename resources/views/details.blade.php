@@ -445,7 +445,7 @@
                 <input type="hidden" name="price" value="{{$rproduct->sale_price == '' ? $rproduct->regular_price : $rproduct->sale_price}}">
                 <button class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
               </form>
-              <!-- @endif -->
+              @endif
             </div>
 
             <div class="pc__info position-relative">
