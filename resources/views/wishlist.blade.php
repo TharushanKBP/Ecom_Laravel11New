@@ -7,6 +7,7 @@
         <h2 class="page-title">Wishlist</h2>
 
         <div class="shopping-cart">
+            @if(Cart::instance('wishlist')->count()>0)
             <div class="cart-table__wrapper">
                 <table class="cart-table">
                     <thead>
@@ -59,10 +60,19 @@
                     </tbody>
                 </table>
                 <div class="cart-table-footer">
-                    <button class="btn btn-light">UPDATE CART</button>
+                    <form method="POST" action="{{route('wishlist.item.clear')}}" id="clear-wishlist">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-light" onclick="document.getElementById('clear-wishlist').submit()">CLEAR WISHLIST</button>
+                    </form>
                 </div>
             </div>
-        </div>
+            @else
+            <div class="cart-empty">
+                <h3>Your wishlist is empty</h3>
+                <a href="{{route('shop.index')}}" class="btn btn-primary">Continue Shopping</a>
+                @endif
+            </div>
     </section>
 </main>
 @endsection
