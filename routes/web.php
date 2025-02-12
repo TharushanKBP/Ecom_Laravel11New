@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthAdmin;
 use App\Http\Controllers\WishlistController;
 
+
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -62,4 +63,7 @@ Route::middleware(['auth', AuthAdmin::class])
         Route::get('/products/edit/{id}', [AdminController::class, 'products_edit'])->name('products.edit');
         Route::put('/products/update/{id}', [AdminController::class, 'products_update'])->name('products.update');
         Route::delete('/admin/products/{id}', [AdminController::class, 'products_destroy'])->name('products.delete');
+
+        // Coupon management routes 
+        Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('coupons');
     });

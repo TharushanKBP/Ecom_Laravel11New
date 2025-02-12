@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Laravel\Facades\Image;
+use App\Models\Coupon;
 
 
 class AdminController extends Controller
@@ -368,5 +369,11 @@ class AdminController extends Controller
             return redirect()->route('admin.products')->with('status', 'Product deleted successfully!');
         }
         return redirect()->route('admin.products')->with('error', 'Product not found.');
+    }
+
+    public function coupons()
+    {
+        $coupons = Coupon::orderBy('expiry_date', 'desc')->paginate(12);
+        return view('admin.Coupons.coupons', compact('coupons'));
     }
 }
