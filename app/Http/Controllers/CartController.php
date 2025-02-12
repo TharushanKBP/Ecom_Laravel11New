@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Surfsidemedia\Shoppingcart\Facades\Cart;
+use App\Models\Product;
 
 class CartController extends Controller
 {
@@ -60,5 +61,23 @@ class CartController extends Controller
     {
         Cart::instance('cart')->destroy();
         return redirect()->route('cart.index')->with('success', 'Cart has been cleared.');
+    }
+
+    public function moveToCart($id)
+    {
+        $product = Product::find($id);
+
+        if ($product) {
+            // Add product to cart logic
+            Cart::create([
+                'product_id' => $product->id,
+                'quantity' => 1, // Default quantity
+                // ...other cart fields...
+            ]);
+
+            return redirect()->route('cart.index')->with('success', 'Product moved to cart successfully!');
+        }
+
+        return redirect()->back()->with('error', 'Product not found.');
     }
 }

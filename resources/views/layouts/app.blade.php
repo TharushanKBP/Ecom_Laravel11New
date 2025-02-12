@@ -484,7 +484,7 @@
           </div>
           @endguest
 
-          <a href="wishlist.html" class="header-tools__item header-tools__cart">
+          <a href="{{route('wishlist.index')}}" class="header-tools__item header-tools__cart">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <use href="#icon_heart" />
               @if(Cart::instance('wishlist')->content()->count()>0)
@@ -520,9 +520,9 @@
               <img src="{{asset('assets/images/logo.png')}}" alt="SurfsideMedia" class="logo__image d-block" />
             </a>
           </div>
-          <p class="footer-address">123 Beach Avenue, Surfside City, CA 00000</p>
-          <p class="m-0"><strong class="fw-medium">contact@surfsidemedia.in</strong></p>
-          <p><strong class="fw-medium">+1 000-000-0000</strong></p>
+          <p class="footer-address">123 Matara, Sri Lanka</p>
+          <p class="m-0"><strong class="fw-medium">khcodes@gmail.com</strong></p>
+          <p><strong class="fw-medium">+94 71 767 5681</strong></p>
 
           <ul class="social-links list-unstyled d-flex flex-wrap mb-0">
             <li>
@@ -619,7 +619,7 @@
 
     <div class="footer-bottom">
       <div class="container d-md-flex align-items-center">
-        <span class="footer-copyright me-auto">©2024 Surfside Media</span>
+        <span class="footer-copyright me-auto">©2025 K/H CODES</span>
         <div class="footer-settings d-md-flex align-items-center">
           <a href="privacy-policy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms-conditions.html">Terms &amp;
             Conditions</a>

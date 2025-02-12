@@ -353,7 +353,7 @@
                                 <input type="hidden" name="id" value="{{$product->id}}">
                                 <input type="hidden" name="quantity" value="1">
                                 <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}">
-                                <button type="submit" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                                <button type="button" class="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart" onclick="this.closest('form').submit();">Add To Cart</button>
                             </form>
                             @endif
                         </div>
