@@ -66,4 +66,6 @@ Route::middleware(['auth', AuthAdmin::class])
 
         // Coupon management routes 
         Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('coupons');
+        Route::get('/admin/coupons/add', [AdminController::class, 'coupons_add'])->name('coupons.add');
+        Route::post('/admin/coupons/store', [AdminController::class, 'coupons_store'])->name('coupons.store');
     });

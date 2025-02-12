@@ -33,11 +33,14 @@
                         </div>
                     </form>
                 </div>
-                <a class="tf-button style-1 w208" href="add-coupon.html"><i
+                <a class="tf-button style-1 w208" href="{{route('admin.coupons.add')}}"><i
                         class="icon-plus"></i>Add new</a>
             </div>
             <div class="wg-table table-all-user">
                 <div class="table-responsive">
+                    @if(Session::has('status'))
+                    <p id="statusMessage" class="alert alert-success">{{ Session::get('status') }}</p>
+                    @endif
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
@@ -89,3 +92,32 @@
 </div>
 
 @endsection
+
+@push('scripts')
+
+<script>
+    $(function() {
+        // Automatically hide the status message after 5 seconds
+        setTimeout(function() {
+            $('#statusMessage').fadeOut('slow');
+        }, 5000);
+
+        $('.delete').on('click', function(e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+            swal({
+                title: "Are you sure?",
+                text: "You want to delete this record?",
+                icon: "warning",
+                buttons: ["No", "Yes"],
+                dangerMode: true,
+            }).then(function(result) {
+                if (result) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+
+@endpush
