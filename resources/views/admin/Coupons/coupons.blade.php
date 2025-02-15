@@ -64,12 +64,14 @@
                                 <td>{{$coupon->expiry_date}}</td>
                                 <td>
                                     <div class="list-icon-function">
-                                        <a href="#">
+                                        <a href="{{route('admin.coupons.edit',['id'=>$coupon->id])}}">
                                             <div class="item edit">
                                                 <i class="icon-edit-3"></i>
                                             </div>
                                         </a>
-                                        <form action="#" method="POST">
+                                        <form action="{{route('admin.coupons.delete',['id'=>$coupon->id])}}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
                                             <div class="item text-danger delete">
                                                 <i class="icon-trash-2"></i>
                                             </div>
