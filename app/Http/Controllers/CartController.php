@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Surfsidemedia\Shoppingcart\Facades\Cart;
 use App\Models\Product;
+use App\Models\Coupon;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -30,7 +33,7 @@ class CartController extends Controller
             $request->name,
             $request->quantity,
             $request->price
-        )->associate('App\Models\Product');
+        )->associate(Product::class);
 
         return redirect()->back()->with('success', 'Item added to cart.');
     }
@@ -68,16 +71,76 @@ class CartController extends Controller
         $product = Product::find($id);
 
         if ($product) {
-            // Add product to cart logic
-            Cart::create([
-                'product_id' => $product->id,
-                'quantity' => 1, // Default quantity
-                // ...other cart fields...
-            ]);
+            // Add product to cart
+            Cart::instance('cart')->add(
+                $product->id,
+                $product->name,
+                1, // Default quantity
+                $product->price
+            )->associate(Product::class);
 
             return redirect()->route('cart.index')->with('success', 'Product moved to cart successfully!');
         }
 
         return redirect()->back()->with('error', 'Product not found.');
+    }
+
+    public function apply_coupon_code(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string|max:255',
+        ]);
+
+        $coupon_code = $request->coupon_code;
+
+        $coupon = Coupon::where('code', $coupon_code)
+            ->where('expiry_date', '>=', Carbon::today())
+            ->where('cart_value', '<=', Cart::instance('cart')->subtotal())
+            ->first();
+
+        if (!$coupon) {
+            return redirect()->back()->with('error', 'Invalid coupon code!');
+        }
+
+        if (Session::has('coupon')) {
+            return redirect()->back()->with('error', 'A coupon is already applied.');
+        }
+
+        Session::put('coupon', [
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'cart_value' => $coupon->cart_value,
+        ]);
+
+        $this->calculateDiscount();
+
+        return redirect()->back()->with('success', 'Coupon has been applied!');
+    }
+
+    protected function calculateDiscount()
+    {
+        $discount = 0;
+
+        if (Session::has('coupon')) {
+            $coupon = Session::get('coupon');
+
+            if ($coupon['type'] == 'fixed') {
+                $discount = $coupon['value'];
+            } else {
+                $discount = (Cart::instance('cart')->subtotal() * $coupon['value']) / 100;
+            }
+
+            $subtotalAfterDiscount = Cart::instance('cart')->subtotal() - $discount;
+            $taxAfterDiscount = $subtotalAfterDiscount * config('cart.tax') / 100;
+            $totalAfterDiscount = $subtotalAfterDiscount + $taxAfterDiscount;
+
+            Session::put('discount', [
+                'discount' => number_format(floatval($discount), 2, '.', ''),
+                'subtotal' => number_format(floatval($subtotalAfterDiscount), 2, '.', ''),
+                'tax' => number_format(floatval($taxAfterDiscount), 2, '.', ''),
+                'total' => number_format(floatval($totalAfterDiscount), 2, '.', ''),
+            ]);
+        }
     }
 }

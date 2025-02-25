@@ -102,16 +102,18 @@
                     </tbody>
                 </table>
                 <div class="cart-table-footer">
-                    <form action="#" class="position-relative bg-body">
-                        <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code">
-                        <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit"
-                            value="APPLY COUPON">
-                    </form>
-                    <form action="{{ route('cart.empty') }}" method="POST">
+                    <form action="{{ route('cart.coupon.apply') }}" method="POST" class="position-relative bg-body">
                         @csrf
-                        @method('DELETE')
-                        <button class="btn btn-light">CLEAR CART</button>
+                        <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code" value="{{ Session::has('coupon') ? Session::get('coupon')['code'] : '' }}">
+                        <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit" value="APPLY COUPON">
                     </form>
+                </div>
+                <div>
+                    @if(Session::has('success'))
+                    <p class="text-success">{{ Session::get('success') }}</p>
+                    @elseif(Session::has('error'))
+                    <p class="text-danger">{{ Session::get('error') }}</p>
+                    @endif
                 </div>
             </div>
             <div class="shopping-cart__totals-wrapper">
@@ -122,19 +124,25 @@
                             <tbody>
                                 <tr>
                                     <th>Subtotal</th>
-                                    <td>${{Cart::instance('cart')->subtotal()}}</td>
+                                    <td>${{ Cart::instance('cart')->subtotal() }}</td>
                                 </tr>
+                                @if(Session::has('coupon'))
+                                <tr>
+                                    <th>Discount ({{ Session::get('coupon')['code'] }})</th>
+                                    <td>-${{ Session::get('discount')['discount'] ?? 0 }}</td>
+                                </tr>
+                                @endif
                                 <tr>
                                     <th>Shipping</th>
                                     <td>Free</td>
                                 </tr>
                                 <tr>
                                     <th>VAT</th>
-                                    <td>${{Cart::instance('cart')->tax()}}</td>
+                                    <td>${{ Cart::instance('cart')->tax() }}</td>
                                 </tr>
                                 <tr>
                                     <th>Total</th>
-                                    <td>${{Cart::instance('cart')->total()}}</td>
+                                    <td>${{ Session::has('discount') ? Session::get('discount')['total'] : Cart::instance('cart')->total() }}</td>
                                 </tr>
                             </tbody>
                         </table>
